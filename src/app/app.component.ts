@@ -184,18 +184,18 @@ export class AppComponent {
  
   logout() {
     this.menuCtrl.close();
-    // this.commonService.post('expireToken', { '': '' }).subscribe((res) => {
-    //   if (res.ResponseFlag == 1) {
-    //     this.commonLogOutData();
-    //     if (this.platform.is('ios')) {
-    //       this.openWithInAppBrowser();  
-    //     } else {
-    //       console.log("openWithInAppBrowser will not work on android and ios platform");
-    //     }
-    //   } else {
-    //     this.commonLogOutData();
-    //   }
-    // });
+    this.commonService.post('expireToken', { '': '' }).subscribe((res) => {
+      if (res.ResponseFlag == 1) {
+        this.commonLogOutData();
+        if (this.platform.is('ios')) {
+          this.openWithInAppBrowser();  
+        } else {
+          console.log("openWithInAppBrowser will not work on android and ios platform");
+        }
+      } else {
+        this.commonLogOutData();
+      }
+    });
  
     this.commonLogOutData(); 
   }
