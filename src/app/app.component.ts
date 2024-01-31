@@ -75,7 +75,7 @@ export class AppComponent {
     })
 
     if (!this.swUpdate.isEnabled) {
-      console.log('Not going to update');
+      // console.log('Not going to update');
     }
     // *************    PWA  Update end here  *************
 
@@ -218,7 +218,8 @@ export class AppComponent {
   };
   public openWithInAppBrowser() {
     let target = "_self";
-    this.inAppBrowser.create('https://online.futuregenerali.in/HealthSalesConnect/web/#', target, this.options);
+    // this.inAppBrowser.create('https://online.futuregenerali.in/HealthSalesConnect/web/#', target, this.options);
+    this.inAppBrowser.create('https://online.futuregenerali.in/HealthSalesConnect_Prod/web/#', target, this.options);
   }
 
   async appExitAlertConfirm() {

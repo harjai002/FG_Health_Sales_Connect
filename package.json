@@ -1,12 +1,13 @@
 {
-  "name": "FgBancaConnect",
+  "name": "FgHealthConnect",
   "version": "0.0.1",
   "author": "Manoj Kumar",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ionic serve",
+    "build": "ionic cordova build android",
+    "emulate": "ionic cordova emulate android --livereload",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -21,6 +22,7 @@
     "@angular/router": "^14.0.0",
     "@angular/service-worker": "^14.0.0",
     "@awesome-cordova-plugins/app-version": "^6.2.0",
+    "@awesome-cordova-plugins/fcm": "^6.6.0",
     "@awesome-cordova-plugins/in-app-browser": "^6.3.0",
     "@awesome-cordova-plugins/network": "^6.1.0",
     "@awesome-cordova-plugins/splash-screen": "^6.1.0",
@@ -107,8 +109,8 @@
       "cordova-plugin-splashscreen": {}
     },
     "platforms": [
-      "android",
-      "browser"
+      "browser",
+      "android"
     ]
   }
 }

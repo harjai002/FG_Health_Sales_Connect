@@ -39,6 +39,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import {CustomPopupComponent} from './services/custom-popup/custom-popup.component';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+ 
+
+
+
 @NgModule({
   declarations: [
     AppComponent,

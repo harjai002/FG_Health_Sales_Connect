@@ -13,7 +13,8 @@
 --------------------------------------------------------
 URLs
 1. https://tinyurl.com/fgBancaConnect // apk url
-2. https://online.futuregenerali.in/HealthSalesConnect/web // web url
+2. https://online.futuregenerali.in/HealthSalesConnect/web/# // web url uat
+2. https://online.futuregenerali.in/HealthSalesConnect_Prod/web/# // web url prod
 3. https://online.futuregenerali.in/DSR/FgBancaConnectMain.zip  server apk zip url
 --------------------------------------------------------
 Angular CLI: 			    14.2.10
