@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://online.futuregenerali.in/HealthSalesConnect/api'  // Live Url
+  // baseUrl: 'https://online.futuregenerali.in/HealthSalesConnect/api'  // Live Url uat
+  baseUrl: 'https://online.futuregenerali.in/HealthSalesConnect_Prod/api'  // Live Url prod
 };
 
 /*

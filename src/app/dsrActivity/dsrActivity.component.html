@@ -37,10 +37,9 @@
         <ion-label>Manager</ion-label>
       </ion-segment-button>
       <ion-segment-button value="zone">
-        <ion-label>Zone</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="bank">
-        <ion-label>Bank</ion-label>
+        <ion-label>Zone <span class="error"
+          *ngIf="(filterForm.controls.zone.touched || submitted) && filterForm.controls.zone.errors?.required">
+          *</span></ion-label>
       </ion-segment-button>
       <ion-segment-button value="activity">
         <ion-label>Activity</ion-label>
@@ -92,28 +91,14 @@
           <ion-card-content>
             <ion-row>
               <ion-col size="12" class="pad-0">
-                <ion-label class="form-lbl bold clr-black" position="floating">Select Zone</ion-label>
+                <ion-label class="form-lbl bold clr-black" position="floating">Select Zone <span class="error"
+                  *ngIf="(filterForm.controls.zone.touched || submitted) && filterForm.controls.zone.errors?.required">
+                  *</span></ion-label>
                 <!-- <ion-select formControlName="zone" (ionChange)="chngeZone($event)" mode="ios" placeholder="Select Zone" [multiple]="true"> -->
                 <ion-select formControlName="zone" mode="ios" placeholder="Select Zone" [multiple]="true">
                   <ion-select-option *ngFor="let z of zoneData" value="{{z.zone}}">{{z.zone}}</ion-select-option>
                 </ion-select>
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-
-        <ion-card class="mar-0" *ngIf="segmentValue == 'bank'">
-          <ion-card-content>
-            <ion-row>
-              <ion-col size="12" class="pad-0">
-                <ion-item>
-                  <ion-label class="clr-black">Bank Name </ion-label>
-                  <!-- itemValueField="id" -->
-                  <ionic-selectable formControlName="bank" itemValueField="bank_Name" item-content [(ngModel)]="bank"
-                    [items]="banks" itemTextField="bank_Name" [canSearch]="true" [isMultiple]="true" [canClear]="true"
-                    [hasVirtualScroll]="true" [hasInfiniteScroll]="true" [shouldFocusSearchbar]="false">
-                  </ionic-selectable>
-                </ion-item>
+                
               </ion-col>
             </ion-row>
           </ion-card-content>
@@ -202,7 +187,7 @@
             <ion-col size="12">
               <ion-label class="list-lbl">{{item.type_Of_Activity | titlecase}}</ion-label>
               <ion-label class="list-date">{{item.date_Of_Visit | date: 'dd/MM/yyyy'}} | <span>
-                  {{item.zone | titlecase}} | {{item.bank_Name | titlecase}}</span>
+                  {{item.zone | titlecase}} </span>
               </ion-label>
             </ion-col>
           </ion-row>
@@ -242,18 +227,18 @@
                 <td>
                   <ul class="sub_activity">
                     <li>Sub Type of Activity</li>
-                    <li>Start Time</li>
+                    <!-- <li>Start Time</li>
                     <li>End Time</li>
-                    <li>Duration</li>
+                    <li>Duration</li> -->
                     <li>Premium Collected Including GST</li>
                   </ul>
                 </td>
                 <td>
                   <ul class="sub_activity">
                     <li>{{subItem?.subTypeOfActivity | titlecase}}</li>
-                    <li>{{subItem?.subStartTime}}</li>
+                    <!-- <li>{{subItem?.subStartTime}}</li>
                     <li>{{subItem?.subEndTime}}</li>
-                    <li>{{subItem?.subDuration}} HH:MM</li>
+                    <li>{{subItem?.subDuration}} HH:MM</li> -->
                     <li>{{subItem ?.premium_Collected ? (subItem ?.premium_Collected |currency:
                       'INR':'symbol':'1.0-0'):0}}</li>
                   </ul>
@@ -269,19 +254,24 @@
               <td>{{item.branch_Code}}</td>
             </tr>-->
             <tr>
+              <td>Agent Name</td>
+              <td>{{item.agentName | titlecase}}</td>
+            </tr>
+            <tr>
               <td>Email</td>
               <td>{{item.email | titlecase}}</td>
-            </tr> 
+            </tr>
             <tr>
               <td>Person Meet</td>
               <td>{{item.to_Whom_Meet | titlecase}}</td>
             </tr>
+          
             <tr>
               <td>Meet Location</td>
               <td>{{item.location | titlecase}}</td>
             </tr>
             <tr>
-              <td>Contact Number</td>
+              <td>Agent Contact Number</td>
               <td>{{item.to_Whom_Meet_Number}}</td>
             </tr>
             <tr>
@@ -299,7 +289,7 @@
       <ion-col>
         <ion-card class="form-card pad-0 mar-0">
           <ion-card-header>
-            <ion-card-title class="login-title center clr-black">DSR Activity
+            <ion-card-title class="login-title center clr-black">DAR Activity
               <ion-icon (click)="closeAddActivity()" style="float: right;color: red;"
                 name="close-circle-outline"></ion-icon>
             </ion-card-title>
@@ -413,18 +403,9 @@
                   <ion-select class="input" style="padding-left:5px" (ionChange)="changeTypeOfActivity($event)"
                     formControlName="type_Of_Activity" placeholder="Select Type of Activity" mode="ios">
                     <div>
-                      <ion-select-option *ngFor="let item of TypeActivity" value="{{item.typeOfActivity}}">{{item.typeOfActivity}}</ion-select-option>
-                      <!-- <ion-select-option value="Recruitment Call">Recruitment Call</ion-select-option>
-                      <ion-select-option value="Policy Inward">Policy Inward</ion-select-option>
-                      <ion-select-option value="Sales Call">Sales Call</ion-select-option>
-                      <ion-select-option value="Customer Claim Service">Customer Claim Service</ion-select-option>
-                      <ion-select-option value="Promotional activity">Promotional activity</ion-select-option>
-                      <ion-select-option value="Joint call with supevisor">Joint call with supevisor</ion-select-option>
-                      <ion-select-option value="Agent Meeting">Agent Meeting</ion-select-option>
-                      <ion-select-option value="Review/Office Meeting/Other Back office work">Review/Office
-                        Meeting/Other Back office
-                        work</ion-select-option> -->
-                                            </div>
+                      <ion-select-option *ngFor="let item of TypeActivity"
+                        value="{{item.typeOfActivity}}">{{item.typeOfActivity}}</ion-select-option>
+                    </div>
                   </ion-select>
                   <span class="error"
                     *ngIf="(drsFrom.controls.type_Of_Activity.touched || submitted) && drsFrom.controls.type_Of_Activity.errors?.required">Type
@@ -435,25 +416,20 @@
               <br>
 
 
-
+              <!-- disabled="drsFrom.controls.type_Of_Activity==''" -->
               <ion-row class="subActivity" formArrayName="subTypeOfActivity">
                 <ion-col size="12">
                   <ion-row *ngFor="let activity of subTypeOfActivity().controls;let i=index" [formGroupName]="i"
                     style="margin-bottom: 5%;">
 
-
-
                     <ion-col size="10">
                       <ion-label class="form-lbl clr-black">Sub Type of Activity </ion-label>
                       <ion-select class="input" formControlName="subTypeOfActivity"
-                        placeholder="Select Type of Activity" mode="ios">
+                        placeholder="Select Type of Activity"
+                        mode="ios">
                         <div>
-                          <ion-select-option  *ngFor="let item of subTypeActivityArr"
+                          <ion-select-option *ngFor="let item of subTypeActivityArr"
                             value="{{item.subTypeOfActivity}}">{{item.subTypeOfActivity}}</ion-select-option>
-                          <!-- <ion-select-option value="Renewal Premium">Renewal Premium</ion-select-option>
-                          <ion-select-option value="Cross-sell"> Cross-sell</ion-select-option>
-                          <ion-select-option value="Business Planning Discussion"> Business Planning Discussion
-                          </ion-select-option> -->
                         </div>
                       </ion-select>
 
@@ -462,50 +438,19 @@
                       newSubTypeOfActivity().controls.subTypeOfActivity.dirty">Sub Type of activity is required</span>
                     </ion-col>
 
-
-
                     <ion-col size="2">
                       <ion-icon class="remove-icon" (click)="removeSubTypeActivity(i)" name="close-circle-outline">
                       </ion-icon>
                     </ion-col>
-                    <ion-col size="4">
-                      <ion-label class="form-lbl clr-black">Start Time
-                      </ion-label>
-                      <!-- <ion-icon class="sub-time-icon extra-icon" name="time-outline"></ion-icon> -->
-                      <ion-input (change)="substartTimeChange($event)" class="input calander-input"
-                        formControlName="subStartTime" type="time">
-                      </ion-input>
-                      <span class="error" *ngIf="(newSubTypeOfActivity().controls.subStartTime.touched || 
-                        submitted) && newSubTypeOfActivity().controls.subStartTime.errors?.required">Start time is
-                        required</span>
-                    </ion-col>
-                    <ion-col size="4">
-                      <ion-label class="form-lbl clr-black">End Time </ion-label>
-                      <!-- <ion-icon class="sub-time-icon extra-icon" name="time-outline"></ion-icon> -->
-                      <ion-input (change)="subendTimeChange($event,activity)" class="input calander-input"
-                        formControlName="subEndTime" type="time">
-                      </ion-input>
-                      <span class="error" *ngIf="(newSubTypeOfActivity().controls.subEndTime.touched || 
-                        submitted) && newSubTypeOfActivity().controls.subEndTime.errors?.required">End time is
-                        required</span>
-                    </ion-col>
-                    <ion-col size="4">
-                      <ion-label class="form-lbl clr-black">Duration </ion-label>
-                      <ion-input class="input" formControlName="subDuration" readonly> </ion-input>
-                      <span class="error" *ngIf="(newSubTypeOfActivity().controls.subDuration.touched || 
-                        submitted) && newSubTypeOfActivity().controls.subDuration.errors?.required">Duration is
-                        required</span>
-                    </ion-col>
+
                     <ion-col size="12">
-                      <ion-label class="form-lbl clr-black">Premium Collected Including GST
-                      </ion-label>
+                      <ion-label class="form-lbl clr-black">Premium Collected Including GST</ion-label>
                       <ion-input type="number" formControlName="premium_Collected"
                         (ionChange)="checkSpaicelChar($event)" class="input" clearInput placeholder="Premium Collected"
                         ondrop="return false;" onpaste="return false;"></ion-input>
                       <span class="error" *ngIf="(newSubTypeOfActivity().controls.premium_Collected.touched || 
                       submitted) && newSubTypeOfActivity().controls.premium_Collected.errors?.required">Premium
                         Collected is required</span>
-
                     </ion-col>
                   </ion-row>
 
@@ -563,9 +508,16 @@
                 </ion-col>
               </ion-row>
 
+              <ion-col size="12">
+                <ion-label class="form-lbl clr-black">Agent name</ion-label>
+                <ion-input type="text" formControlName="agentName" class="input" clearInput placeholder="Agent name"
+                  ondrop="return false;" onpaste="return false;"></ion-input>
+                <span class="error" *ngIf="(drsFrom.controls.agentName.touched || submitted) && drsFrom.controls.agentName.errors?.required">Agent name is required</span>
+              </ion-col>
+
               <ion-row>
                 <ion-col size="12">
-                  <ion-label class="form-lbl clr-black">Contact number </ion-label>
+                  <ion-label class="form-lbl clr-black">Agent Contact number </ion-label>
                   <ion-input formControlName="to_Whom_Meet_Number" (ionChange)="checkSpaicelChar($event)" class="input"
                     onKeyPress="if(this.value.length==10) return false;" clearInput type="number"
                     placeholder="99********" onPaste="return false" onCopy="return false" onCut="return false"
@@ -628,11 +580,8 @@
         <li>Duration</li>
         <li>Premium Collected Including GST</li>
       </ul>
-      <th>Bank Name</th>
-      <th>Branch Code</th>
-      <th>Bank Branch name</th>
       <th>Person Meet</th>
-      <th>Contact Number</th>
+      <th>Agent Contact Number</th>
       <th>Other Remark Comments</th>
     </tr>
     <table *ngFor="let item of filterData | filterdata:filterSearch; let i=index">
@@ -654,12 +603,8 @@
             <li>{{item.premium_Collected ? (item.premium_Collected |currency: 'INR':'symbol':'1.0-0'):0}}</li>
           </ul>
         </td>
-        <td>{{item.bank_Name}}</td>
-        <td>{{item.branch_Code}}</td>
-        <td>{{item.bank_Branch_Name}}</td>
         <td>{{item.to_Whom_Meet}}</td>
         <td>{{item.to_Whom_Meet_Number}}</td>
-
         <td>{{item.remark_Comments}}</td>
       </tr>
     </table>

@@ -165,15 +165,15 @@ export class DashboardComponent implements OnInit {
   }
 
   getZones() {
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    this.loderService.showLoading(loadingParams);
+    this.loderService.loaderStatus.next(true);
     this.commonService.post('getDSRZone', { userName: this.userEmpCode }).subscribe((res) => {
+      this.loderService.loaderStatus.next(false);
       if (res.ResponseFlag == 1) {
-        this.loderService.dismiss();
+        
         this.zoneData = JSON.parse(res.ResponseMessage).Table;
         // console.log("Zone data ", this.zoneData);
       } else {
-        this.loderService.dismiss();
+       
         this.toastService.toast("Zone Not Found");
       }
     })
@@ -184,21 +184,17 @@ export class DashboardComponent implements OnInit {
     this.submitted = true;
     let zone = e.target.value;
     if (zone.length != 0) {
-      let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-      this.loderService.showLoading(loadingParams);
+      this.loderService.loaderStatus.next(true);
       // userName: this.userEmpCode,
       this.commonService.post('getLeaderDtlsWithZone', { userName: this.userEmpCode, zones: zone }).subscribe((res) => {
-
+        this.loderService.loaderStatus.next(false);
         if (res.ResponseFlag == 1) {
-
-          this.loderService.dismiss();
           this.teamsData = JSON.parse(res.ResponseMessage).Table;
           if (this.teamsData.length == 0) {
             this.toastService.toast("No Records Found !");
           }
           // console.log("Managers ", this.teamsData);
         } else {
-          this.loderService.dismiss();
           this.toastService.toast("No Records Found!");
         }
       }, (err) => {
@@ -215,10 +211,9 @@ export class DashboardComponent implements OnInit {
   chngeManagers(e) {
     this.submitted = true;
     let manager = e.target.value;
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    this.loderService.showLoading(loadingParams);
+    this.loderService.loaderStatus.next(true);
     this.commonService.post('getLeaderDtlsWithZone', { zone: [], manager: manager }).subscribe((res) => {
-      this.loderService.dismiss();
+      this.loderService.loaderStatus.next(false);
       if (res.ResponseFlag == 1) {
         let data = JSON.parse(res.ResponseMessage).Table;
         for (let i = 0; i < data.length; i++) {
@@ -236,10 +231,10 @@ export class DashboardComponent implements OnInit {
         }
         else {
           this.filterData = [];
-          this.loderService.dismiss();
+          this.loderService.loaderStatus.next(false);
         }
       } else {
-        this.loderService.dismiss();
+        this.loderService.loaderStatus.next(false);
         this.toastService.toast("Data Not Found");
       }
     }, (err) => {
