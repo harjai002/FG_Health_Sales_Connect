@@ -32,10 +32,9 @@
         <ion-label>Manager</ion-label>
       </ion-segment-button>
       <ion-segment-button value="zone">
-        <ion-label>Zone</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="bank">
-        <ion-label>Bank</ion-label>
+        <ion-label>Zone <span class="error"
+          *ngIf="(filterForm.controls.zone.touched || submitted) && filterForm.controls.zone.errors?.required">
+          *</span></ion-label>
       </ion-segment-button>
       <ion-segment-button value="activity">
         <ion-label>Activity</ion-label>
@@ -98,34 +97,20 @@
 
 
     <div
-      *ngIf="segmentValue == 'zone' || segmentValue == 'bank' || segmentValue == 'activity' || segmentValue == 'date' ">
+      *ngIf="segmentValue == 'zone' || segmentValue == 'activity' || segmentValue == 'date' ">
       <form [formGroup]="filterForm">
         <ion-card class="mar-0" *ngIf="segmentValue == 'zone'">
           <ion-card-content>
             <ion-row>
               <ion-col size="12" class="pad-0">
-                <ion-label class="form-lbl bold clr-black" position="floating">Select Zone</ion-label>
+                <ion-label class="form-lbl bold clr-black" position="floating">Select Zone  <span class="error"
+                  *ngIf="(filterForm.controls.zone.touched || submitted) && filterForm.controls.zone.errors?.required">
+                  *</span></ion-label>
                 <!-- <ion-select formControlName="zone" (ionChange)="chngeZone($event)" mode="ios" placeholder="Select Zone" [multiple]="true"> -->
                 <ion-select formControlName="zone" mode="ios" placeholder="Select Zone" [multiple]="true">
                   <ion-select-option *ngFor="let z of zoneData" value="{{z.zone}}">{{z.zone}}</ion-select-option>
                 </ion-select>
-              </ion-col>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-
-        <ion-card class="mar-0" *ngIf="segmentValue == 'bank'">
-          <ion-card-content>
-            <ion-row>
-              <ion-col size="12" class="pad-0">
-                <ion-item>
-                  <ion-label class="clr-black">Bank Name</ion-label>
-                  <!-- itemValueField="id" -->
-                  <ionic-selectable formControlName="bank" item-content [(ngModel)]="bank" [items]="banks"
-                    itemTextField="bank_Name" [canSearch]="true" [canClear]="true" [isMultiple]="true"
-                    [hasVirtualScroll]="true" [hasInfiniteScroll]="true" [shouldFocusSearchbar]="false">
-                  </ionic-selectable>
-                </ion-item>
+               
               </ion-col>
             </ion-row>
           </ion-card-content>
@@ -139,16 +124,15 @@
                 <ion-select formControlName="activity" placeholder="Plz Select Type of Activity" [multiple]="true"
                   mode="ios">
                   <div>
-                    <ion-select-option value="Bank Branch visit">Bank Branch visit</ion-select-option>
-                    <ion-select-option value="Bank Zonal office">Bank Zonal office</ion-select-option>
-                    <ion-select-option value="Bank Regional office">Bank Regional office</ion-select-option>
-                    <ion-select-option value="Customer service">Customer service</ion-select-option>
+                    <ion-select-option value="Recruitment Call">Recruitment Call</ion-select-option>
+                    <ion-select-option value="Policy Inward">Policy Inward</ion-select-option>
+                    <ion-select-option value="Sales Call">Sales Call</ion-select-option>
+                    <ion-select-option value="Customer Claim Service">Customer Claim Service</ion-select-option>
                     <ion-select-option value="Promotional activity">Promotional activity</ion-select-option>
                     <ion-select-option value="Joint call with supevisor">Joint call with supevisor</ion-select-option>
-                    <ion-select-option value="Review/Office Meeting">Review/Office meeting</ion-select-option>
-                    <ion-select-option value="Corporate salary">Corporate salary</ion-select-option>
-                    <ion-select-option value="Policy Issuance/Other Back office work">Policy issuance/Other Back office
-                      work</ion-select-option>
+                    <ion-select-option value="Agent Meeting">Agent Meeting</ion-select-option>
+                    <ion-select-option value="Review/Office Meeting/Other Back office work">Review/Office Meeting/Other
+                      Back office work</ion-select-option>
                   </div>
                 </ion-select>
               </ion-col>
@@ -207,7 +191,7 @@
             <ion-col size="12">
               <ion-label class="list-lbl">{{item.type_Of_Activity | titlecase}}</ion-label>
               <ion-label class="list-date">{{item.date_Of_Visit | date: 'dd/MM/yyyy'}} | <span>
-                  {{item.zone}} | {{item.bank_Name | titlecase}}</span>
+                  {{item.zone}}</span>
               </ion-label>
             </ion-col>
           </ion-row>
@@ -266,23 +250,11 @@
               </tr>
             </ng-container>
             <tr>
-              <td>Bank Name</td>
-              <td>{{item.bank_Name | titlecase}}</td>
-            </tr>
-            <tr>
-              <td>Branch Code</td>
-              <td>{{item.branch_Code}}</td>
-            </tr>
-            <tr>
-              <td>Bank Branch name</td>
-              <td>{{item.bank_Branch_Name | titlecase}}</td>
-            </tr>
-            <tr>
               <td>Person Meet</td>
               <td>{{item.to_Whom_Meet | titlecase}}</td>
             </tr>
             <tr>
-              <td>Contact Number</td>
+              <td>Agent Contact Number</td>
               <td>{{item.to_Whom_Meet_Number}}</td>
             </tr>
             <tr>
@@ -320,11 +292,8 @@
         <li>Duration</li>
         <li>Premium Collected Inclusing GST</li>
       </ul>
-      <th>Bank Name</th>
-      <th>Branch Code</th>
-      <th>Bank Branch name</th>
       <th>Person Meet</th>
-      <th>Contact Number</th>
+      <th>Agent Contact Number</th>
       <th>Other Remark Comments</th>
     </tr>
     <table *ngFor="let item of filterData; let i=index">
@@ -346,9 +315,6 @@
             <li>{{item.premium_Collected}}</li>
           </ul>
         </td>
-        <td>{{item.bank_Name}}</td>
-        <td>{{item.branch_Code}}</td>
-        <td>{{item.bank_Branch_Name}}</td>
         <td>{{item.to_Whom_Meet}}</td>
         <td>{{item.to_Whom_Meet_Number}}</td>
 

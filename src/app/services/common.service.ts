@@ -13,7 +13,8 @@ export class CommonService {
     if (window.location.hostname == 'localhost') {
       this.api = environment.baseUrl;
     } else {
-      this.api = location.protocol + "//" + location.hostname + "/HealthSalesConnect/api";
+      // this.api = location.protocol + "//" + location.hostname + "/HealthSalesConnect/api"; //uat
+      this.api = location.protocol + "//" + location.hostname + "/HealthSalesConnect_Prod/api"; //prod
       // this.api = location.protocol + "//" + location.hostname + "/DSR/";
     }
   }

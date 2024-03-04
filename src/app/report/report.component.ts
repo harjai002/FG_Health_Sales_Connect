@@ -54,7 +54,7 @@ export class ReportComponent implements OnInit {
     // this.getDSRActivityData();
     this.filterForm = this.fb.group({
       bank: [''],
-      zone: [''],
+      zone: ['', [Validators.required]],
       startDate: [''],
       activity: [''],
       endDate: ['']
@@ -69,7 +69,7 @@ export class ReportComponent implements OnInit {
 
   filterOpen() {
     this.openFilter = !this.openFilter;
-    this.segmentValue= "manager";
+    this.segmentValue = "manager";
     // this.getBanks();
     this.getZones();
   }
@@ -95,7 +95,7 @@ export class ReportComponent implements OnInit {
         }
         this.filterData = data;
         // console.log("dsr data", this.filterData);
-      } 
+      }
     }, (err) => {
       console.log(err, "error");
     })
@@ -103,50 +103,44 @@ export class ReportComponent implements OnInit {
 
 
   applyFilters() {
+    this.submitted = true;
     let formData = this.filterForm.value;
-    // console.log("filter formData", formData);
-    this.loderService.loaderStatus.next(true);
-    let bank = [this.filterForm.value.bank];
-    let bb = [];
-    var d = bank[0];
-    if (d?.length > 0) {
-      d.forEach(e => {
-        bb.push(e.bank_Name)
-      });
-    }
-    let frmData = {
-      userId: this.userEmpCode,
-      zone: formData.zone ? formData.zone : [],
-      bank: formData.bank ? bb : [],
-      activity: formData.activity ? formData.activity : [],
-      startDate: formData.startDate ? formData.startDate : "",
-      endDate: formData.endDate ? formData.endDate : ""
-    }
-
-    this.commonService.post('dSRFilter', frmData).subscribe((res) => {
-      this.loderService.loaderStatus.next(false);
-      if (res.ResponseFlag == 1) {
-        let data = JSON.parse(res.ResponseMessage).Table;
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].subTypeOfActivity.length > 10) {
-            data[i].subTypeOfActivity = JSON.parse(data[i].subTypeOfActivity);
-            // console.log("sub data", data[i].subTypeOfActivity);
-          } else {
-            data[i].subTypeOfActivity = [];
-          }
-        }
-       
-        this.filterData = data;
-        // console.log("api filter data", data);
-      } else {
-        console.log("No Record Found ");
-        this.toastService.toast("No Record Found ");
+    if (this.filterForm.valid) {
+      this.loderService.loaderStatus.next(true);
+      let frmData = {
+        userId: this.userEmpCode,
+        zone: formData.zone ? formData.zone : [],
+        activity: formData.activity ? formData.activity : [],
+        startDate: formData.startDate ? formData.startDate : "",
+        endDate: formData.endDate ? formData.endDate : ""
       }
-    }, (err) => {
-      console.log(err, "error");
-      this.loderService.dismiss();
+      this.commonService.post('dSRFilter', frmData).subscribe((res) => {
+        this.loderService.loaderStatus.next(false);
+        if (res.ResponseFlag == 1) {
+          let data = JSON.parse(res.ResponseMessage).Table;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].subTypeOfActivity.length > 10) {
+              data[i].subTypeOfActivity = JSON.parse(data[i].subTypeOfActivity);
+              // console.log("sub data", data[i].subTypeOfActivity);
+            } else {
+              data[i].subTypeOfActivity = [];
+            }
+          }
+
+          this.filterData = data;
+          // console.log("api filter data", data);
+        } else {
+          console.log("No Record Found ");
+          this.toastService.toast("No Record Found ");
+        }
+      }, (err) => {
+        console.log(err, "error");
+        this.loderService.dismiss();
+      }
+      )
+    } else {
+      this.toastService.toast("Zone is required");
     }
-    )
   }
 
   segmentChanged(e) {
@@ -163,12 +157,12 @@ export class ReportComponent implements OnInit {
       this.commonService.post('getLeaderDtlsWithZone', { userName: this.userEmpCode, zones: this.zoneChange }).subscribe((res) => {
         this.loderService.loaderStatus.next(false);
         if (res.ResponseFlag == 1) {
-       
+
           this.managerData = JSON.parse(res.ResponseMessage).Table;
-          this.showmangerDrop=false;
+          this.showmangerDrop = false;
           if (this.managerData.length == 0) {
-            this.managerData=null;
-            this.showmangerDrop=true;
+            this.managerData = null;
+            this.showmangerDrop = true;
             this.toastService.toast("Manager Not Found !");
           }
           // console.log("Managers ", this.managerData);
@@ -186,7 +180,6 @@ export class ReportComponent implements OnInit {
       if (res.ResponseFlag == 1) {
         this.zoneData = JSON.parse(res.ResponseMessage).Table;
       } else {
-  
         this.toastService.toast("Zone Not Found");
       }
     })
@@ -214,7 +207,7 @@ export class ReportComponent implements OnInit {
           this.filterData = data;
           // console.log("dsr data", data);
         } else {
-  
+
           this.toastService.toast("Data Not Found");
         }
       }, (err) => {
@@ -224,20 +217,6 @@ export class ReportComponent implements OnInit {
 
   }
 
-  getBanks() {
-    this.loderService.loaderStatus.next(true);
-    this.commonService.get('getDSRBanks').subscribe((res) => {
-      this.loderService.loaderStatus.next(false);
-      if (res.ResponseFlag == 1) {
-        this.banks = JSON.parse(res.ResponseMessage).Table;
-        // console.log("Banks found",this.banks);
-      } else {
-        console.log("Banks not found");
-      }
-    }), (err) => {
-      console.log("error", err);
-    }
-  }
 
 
 

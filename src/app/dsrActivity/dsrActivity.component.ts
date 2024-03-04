@@ -25,11 +25,6 @@ class BankBranchName {
 })
 export class DsrActivityComponent implements OnInit {
   titleMsg = "DSR Activity";
-  banks: Banks[];
-  bank: Banks;
-  branchNames: BankBranchName[];
-  branchName: BankBranchName;
-  bankBranchCode: any;
   userName: any;
   userEmpCode: any;
   drsFrom: FormGroup;
@@ -68,14 +63,14 @@ export class DsrActivityComponent implements OnInit {
   clanderDate: Date;
   subTypeActivityArr = [];
   TypeActivity: any = [
-    { flag:'Y', typeOfActivity: "Recruitment Call"},
-    { flag:'N', typeOfActivity: "Policy Inward" },
-    { flag:'N', typeOfActivity: "Sales Call"},
-    { flag:'N', typeOfActivity: "Customer Claim Service"},
-    { flag:'N', typeOfActivity: "Promotional activity"},
-    { flag:'Y', typeOfActivity: "Joint call with supevisor"},
-    { flag:'Y', typeOfActivity: "Agent Meeting" },
-    { flag:'N', typeOfActivity: "Review/Office Meeting/Other Back office work"}
+    { flag: 'Y', typeOfActivity: "Recruitment Call" },
+    { flag: 'N', typeOfActivity: "Policy Inward" },
+    { flag: 'N', typeOfActivity: "Sales Call" },
+    { flag: 'N', typeOfActivity: "Customer Claim Service" },
+    { flag: 'N', typeOfActivity: "Promotional activity" },
+    { flag: 'Y', typeOfActivity: "Joint call with supevisor" },
+    { flag: 'Y', typeOfActivity: "Agent Meeting" },
+    { flag: 'N', typeOfActivity: "Review/Office Meeting/Other Back office work" }
   ];
 
   subTypeActivity: any = [
@@ -87,7 +82,7 @@ export class DsrActivityComponent implements OnInit {
     { typeOfActivity: "Joint call with supevisor", subActivity: 'Agent meeting ' },
     { typeOfActivity: "Joint call with supevisor", subActivity: 'Recruitment Call' },
     { typeOfActivity: "Agent Meeting", subActivity: 'Discussion on' },
-   
+
   ];
 
   constructor(
@@ -125,6 +120,7 @@ export class DsrActivityComponent implements OnInit {
       subTypeOfActivity: this.fb.array([]),
       email: ['', Validators.required],
       meet_Location: ['', Validators.required],
+      agentName: ['', [Validators.required]],
       // branch_Code: ['12345'],
       // bank_Branch_Name: ['', Validators.required],
       // mode_Of_Transport: [''],
@@ -138,8 +134,7 @@ export class DsrActivityComponent implements OnInit {
     });
 
     this.filterForm = this.fb.group({
-      bank: [''],
-      zone: [''],
+      zone: ['', Validators.required],
       startDate: [''],
       activity: [''],
       endDate: ['']
@@ -153,7 +148,7 @@ export class DsrActivityComponent implements OnInit {
 
 
 
-  changeTypeOfActivity(e: any,f) {
+  changeTypeOfActivity(e: any, f) {
     // console.log("flag",f);
     // this.subTypeActivityArr = []
     // var final = [];
@@ -174,12 +169,12 @@ export class DsrActivityComponent implements OnInit {
   }
 
 
-  getSubTypeOfActivity(activityName:any) {
-    this.commonService.post('getDSRSubtypeOfActivity',{type_Of_Activity:activityName}).subscribe((res) => {
+  getSubTypeOfActivity(activityName: any) {
+    this.commonService.post('getDSRSubtypeOfActivity', { type_Of_Activity: activityName }).subscribe((res) => {
       if (res.ResponseFlag == 1) {
         var d = JSON.parse(res.ResponseMessage).Table;
-        this.subTypeActivityArr=d;
-        console.log("DSRSubtypeOfActivity",d)
+        this.subTypeActivityArr = d;
+        console.log("DSRSubtypeOfActivity", d)
       } else {
         console.log("DSRSubtypeOfActivity not found");
       }
@@ -201,72 +196,7 @@ export class DsrActivityComponent implements OnInit {
       this.loderService.dismiss();
     }, 1000);
   }
-  getBanks() {
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    // this.loderService.showLoading(loadingParams);
-    this.commonService.get('getDSRBanks').subscribe((res) => {
-      if (res.ResponseFlag == 1) {
-        this.banks = JSON.parse(res.ResponseMessage).Table;
-        // this.loderService.dismiss();
-      } else {
-        // this.loderService.dismiss();
-        console.log("Banks not found");
-      }
-    }), (err) => {
-      // this.loderService.dismiss();
-      console.log("error", err);
-    }
-  }
 
-  async bankNameChange(event: { component: IonicSelectableComponent, value: any }) {
-
-    this.drsFrom.get('bank_Branch_Name').setValue('');
-    this.drsFrom.get('branch_Code').setValue('');
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    //this.loderService.showLoading(loadingParams);
-    await this.commonService.post('getDSRBankBranchDtls', event.value).subscribe((res) => {
-      if (res.ResponseFlag == 1) {
-        this.loderService.dismiss();
-        this.branchNames = JSON.parse(res.ResponseMessage).Table;
-        // console.log("branch name", this.branchNames);
-        this.checkSpaicelChar(event);
-      } else {
-        this.loderService.dismiss();
-        console.log("bank branch name not found");
-      }
-    }), (err) => {
-      this.loderService.dismiss();
-      console.log("error", err);
-    }
-  }
-
-  bankBranchClick() {
-    let loderTime = 0;
-    if (this.branchNames.length <= 200) { console.log("1"); loderTime = 1000; }
-    else if (this.branchNames.length > 200 && this.branchNames.length < 400) { loderTime = 2000; }
-    else if (this.branchNames.length > 401 && this.branchNames.length < 600) { loderTime = 3000; }
-    else if (this.branchNames.length > 601 && this.branchNames.length < 900) { loderTime = 4000; }
-    else if (this.branchNames.length > 901 && this.branchNames.length < 3000) { loderTime = 5000; }
-    else { loderTime = 3000; }
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    //this.loderService.showLoading(loadingParams);
-    setTimeout(() => {
-      this.loderService.dismiss();
-    }, loderTime);
-  }
-
-  bankBranchNameChange(event: { component: IonicSelectableComponent, value: any }) {
-    this.commonService.post('getDSRBankBranchCode', event.value).subscribe((res) => {
-      if (res.ResponseFlag == 1) {
-        this.bankBranchCode = JSON.parse(res.ResponseMessage).Table[0].bank_Branch_Code;
-        this.checkSpaicelChar(event);
-      } else {
-        console.log("bank branch code not found");
-      }
-    }), (err) => {
-      console.log("error", err);
-    }
-  }
 
   getZone() {
     this.commonService.post('DSRLogin', { userName: this.userEmpCode }).subscribe((res) => {
@@ -357,48 +287,42 @@ export class DsrActivityComponent implements OnInit {
 
   applyFilters() {
     let formData = this.filterForm.value;
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-    //this.loderService.showLoading(loadingParams);
-    let bank = [this.filterForm.value.bank];
-    let bb = [];
-    var d = bank[0];
-    if (d?.length > 0) {
-      d.forEach(e => {
-        bb.push(e.bank_Name)
-      });
-    }
-    let frmData = {
-      userId: this.userEmpCode,
-      zone: formData.zone ? formData.zone : [],
-      bank: formData.bank ? bb : [],
-      activity: formData.activity ? formData.activity : [],
-      startDate: formData.startDate ? formData.startDate : "",
-      endDate: formData.endDate ? formData.endDate : ""
-    }
+    if (this.filterForm.valid) {
 
-    this.commonService.post('dSRFilter', frmData).subscribe((res) => {
-      if (res.ResponseFlag == 1) {
-        let data = JSON.parse(res.ResponseMessage).Table;
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].subTypeOfActivity.length > 10) {
-            data[i].subTypeOfActivity = JSON.parse(data[i].subTypeOfActivity);
-            // console.log("sub data", data[i].subTypeOfActivity);
-          } else {
-            data[i].subTypeOfActivity = [];
-          }
-        }
-        this.loderService.dismiss();
-        this.filterData = data;
-        // console.log("api filter data", data);
-      } else {
-        console.log("No Record Found ");
-        this.loderService.dismiss();
-        this.toastService.toast("No Record Found ");
+      let frmData = {
+        userId: this.userEmpCode,
+        zone: formData.zone ? formData.zone : [],
+        activity: formData.activity ? formData.activity : [],
+        startDate: formData.startDate ? formData.startDate : "",
+        endDate: formData.endDate ? formData.endDate : ""
       }
-    }, (err) => {
-      console.log(err, "error");
+
+      this.commonService.post('dSRFilter', frmData).subscribe((res) => {
+        if (res.ResponseFlag == 1) {
+          let data = JSON.parse(res.ResponseMessage).Table;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].subTypeOfActivity.length > 10) {
+              data[i].subTypeOfActivity = JSON.parse(data[i].subTypeOfActivity);
+              // console.log("sub data", data[i].subTypeOfActivity);
+            } else {
+              data[i].subTypeOfActivity = [];
+            }
+          }
+          this.loderService.dismiss();
+          this.filterData = data;
+          // console.log("api filter data", data);
+        } else {
+          console.log("No Record Found ");
+          this.loderService.dismiss();
+          this.toastService.toast("No Record Found ");
+        }
+      }, (err) => {
+        console.log(err, "error");
+      }
+      )
+    } else {
+      this.toastService.toast("Zone is required");
     }
-    )
   }
 
   doRefresh(event) {
@@ -410,7 +334,7 @@ export class DsrActivityComponent implements OnInit {
 
   getDSRActivityData() {
     this.loderService.loaderStatus.next(true);
-    this.commonService.post('getDSRdtls', { userName: '899436' }).subscribe((res) => {
+    this.commonService.post('getDSRdtls', { userName: this.userEmpCode }).subscribe((res) => {
       this.loderService.loaderStatus.next(false);
       if (res.ResponseFlag == 1) {
 
@@ -424,7 +348,7 @@ export class DsrActivityComponent implements OnInit {
           }
         }
         this.filterData = data;
-        console.log("dsr data", this.filterData);
+        // console.log("dsr data", this.filterData);
       } else {
         // this.loderService.dismiss();
         this.loderService.loaderStatus.next(false);
@@ -444,9 +368,9 @@ export class DsrActivityComponent implements OnInit {
   newSubTypeOfActivity() {
     return this.fb.group({
       subTypeOfActivity: ['', [Validators.required]],
-      subStartTime: ['', [Validators.required]],
-      subEndTime: ['', [Validators.required]],
-      subDuration: ['', [Validators.required]],
+      subStartTime: ['11:10:00'],
+      subEndTime: ['11:15:00'],
+      subDuration: ['00:05'],
       premium_Collected: ['', [Validators.required]],
     })
   }
@@ -508,7 +432,6 @@ export class DsrActivityComponent implements OnInit {
     // console.log("chesk start time and end time", this.startTime, this.endTime);
   }
 
-
   subendTimeChange(e, activity) {
     this.endTime = e.target.value;
     if (this.endTime >= this.startTime) {
@@ -522,8 +445,6 @@ export class DsrActivityComponent implements OnInit {
       // console.log("wrong");
     }
   }
-
-
 
   searchData() {
     var result = this.filterData.filter(a => {
@@ -630,7 +551,6 @@ export class DsrActivityComponent implements OnInit {
   clearFilterForm() {
     this.filterForm.reset();
     this.getDSRActivityData();
-    this.getBanks();
     this.getZones();
   }
 

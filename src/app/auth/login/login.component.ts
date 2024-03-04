@@ -11,7 +11,7 @@ import { AuthenticationService } from 'src/app/services/auth/authentication.serv
 import { Platform, IonRouterOutlet } from '@ionic/angular';
 import { AppVersion } from '@awesome-cordova-plugins/app-version/ngx';
 import { CommonService } from '../../services/common.service';
-import { CookieService } from 'ngx-cookie';
+import { ToastController } from '@ionic/angular';
 // for file download apk 
 import { File } from '@ionic-native/file/ngx';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
 
 
 
+
   constructor(public formBuilder: FormBuilder,
     public toastService: ToastService,
     private router: Router,
@@ -56,7 +57,7 @@ export class LoginComponent implements OnInit {
     private platform: Platform,
     private appVersion: AppVersion,
     public alertController: AlertController,
-    private cookieService: CookieService,
+    private toastController: ToastController,
     // for download apk file
     private file: File,
     private fileTransfer: FileTransfer,
@@ -72,6 +73,8 @@ export class LoginComponent implements OnInit {
     });
   }
 
+
+
   ngOnInit() {
     // this. getUserData();
     //console.log('deive', this.device.model);
@@ -79,21 +82,21 @@ export class LoginComponent implements OnInit {
     this.loginForm.get('password').setValue('');
     this.togglepassword();
     this.menuCtrl.enable(false);
+
+    var c = this.getCookie('userCookie');
+    if (c) {
+      var cookieData = JSON.parse(atob(c));
+      this.loginForm.get('userName').setValue(cookieData.userName ? cookieData.userName : '');
+      this.loginForm.get('password').setValue(cookieData.password ? cookieData.password : '');
+    }
+
+
   }
 
 
-  getCookie() {
-    var cookieName = 'HelloWorld';
-    var cookieValue = 'HelloWorld';
-    var myDate = new Date();
-    myDate.setMonth(myDate.getMonth() + 12);
-    document.cookie = cookieName + "=" + cookieValue + ";expires=" + myDate
-      + ";domain=.example.com;path=/";
-  }
+
 
   login() {
-    let loadingParams = { msg: 'Please Wait...', spinner: 'lines-sharp-small', mode: 'ios', class: 'custom-loading', backdropDismiss: true }
-
     this.loderService.loaderStatus.next(true);
     let formData = this.loginForm.value;
     if (this.loginForm.valid) {
@@ -101,21 +104,28 @@ export class LoginComponent implements OnInit {
 
       this.authService.login(data).subscribe(res => {
         this.loderService.loaderStatus.next(false);
-        // this.loderService.dismiss();
         if (res.ResponseFlag == 1) {
           let data = JSON.parse(res.ResponseMessage).Table[0];
-          console.log("res",JSON.parse(res.ResponseMessage).Table);
+          // console.log("res",JSON.parse(res.ResponseMessage).Table);
           const stringifyObj = JSON.stringify(data)
           const b64Str = btoa(stringifyObj)
 
           this.authanticationSer.setSession('Token', data.Token);
           this.authanticationSer.setSession('authData', b64Str);
 
+          var c = this.getCookie('userCookie');
+          if (c) {
+            console.log("Cookie already exits");
+          }
+          else {
+            this.cookiesToast(formData);
+          }
+
           this.router.navigate(['/home']);
           this.menuCtrl.enable(true);
           this.sharedDataService.sendData(data);
-          this.toastService.toast("Login successful");
-          // this.loginForm.reset();         
+          // this.toastService.toast("Login successful");
+          this.loginForm.reset();
         }
         else {
           this.toastService.toast("Login Failed , Please Check User Name & Password");
@@ -128,40 +138,54 @@ export class LoginComponent implements OnInit {
   }
 
 
-  // login() {
-  //   this.loderService.loaderStatus.next(true);
-  //   let formData = this.loginForm.value;
-  //   if (this.loginForm.valid) {
-     
-  //     if (formData.userName == '899436' && formData.password == 'Password@1') {
-  //       let data = { userName: btoa(formData.userName), password: btoa(formData.password),flag:btoa('1') }
-  //       const stringifyObj = JSON.stringify(data)
-  //       const b64Str = btoa(stringifyObj)
-  //       this.authanticationSer.setSession('authData', b64Str);
-  //       this.router.navigate(['/home']);
-  //       this.menuCtrl.enable(true);
-  //       this.sharedDataService.sendData(data);
-  //       this.toastService.toast("Login successful");
-  //       this.loginForm.reset(); 
-  //       this.loderService.loaderStatus.next(false);
-  //     }else if(formData.userName == '898467' && formData.password == 'Password@1'){
-  //       let data = { userName: btoa(formData.userName), password: btoa(formData.password),flag:btoa('2') }
-  //       const stringifyObj = JSON.stringify(data)
-  //       const b64Str = btoa(stringifyObj)
-  //       this.authanticationSer.setSession('authData', b64Str);
-  //       this.router.navigate(['/home']);
-  //       this.menuCtrl.enable(true);
-  //       this.sharedDataService.sendData(data);
-  //       this.toastService.toast("Login successful");
-  //       this.loginForm.reset(); 
-  //       this.loderService.loaderStatus.next(false);
-  //     }
-  //     else {
-  //       this.toastService.toast("Login Failed , Please Check User Name & Password");
-  //     }
-  //   }
-  // }
+  async cookiesToast(formData: any) {
+    const toast = await this.toastController.create({
+      message: ' Are you sure you want to save cookies.',
+      position: 'bottom',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+            console.log('toast cancel');
+          },
+        },
+        {
+          text: 'Accept',
+          role: 'confirm',
+          handler: () => {
+            console.log('toast accept');
+            let data = { userName: formData.userName, password: formData.password };
+            const stringifyObj = JSON.stringify(data)
+            const b64Str = btoa(stringifyObj)
+            this.setCookie("userCookie", b64Str, 1);
+          },
+        },
+      ]
+    });
 
+    await toast.present();
+  }
+
+
+  setCookie(name: string, value: any, expires?: number): void {
+    let cookieString = `${name}=${value}`;
+    if (expires) {
+      const expirationDate = new Date(Date.now() + expires * 24 * 60 * 60 * 1000);
+      cookieString += `;expires=${expirationDate.toUTCString()}`;
+    }
+    document.cookie = cookieString;
+  }
+
+  getCookie(name: string): string | null {
+    const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+    const foundCookie = cookies.find(cookie => cookie.startsWith(name + '='));
+    return foundCookie ? foundCookie.split('=')[1] : null;
+  }
+
+  deleteCookie(name: string): void {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  }
 
   togglepassword() {
     if (this.passwordtoggleicon == 'eye-outline') {
