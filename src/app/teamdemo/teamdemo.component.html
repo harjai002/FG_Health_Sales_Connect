@@ -64,7 +64,7 @@
     <ion-item>
       <ion-label><span>{{i+1}}.</span>&nbsp; {{item.name | titlecase}}<br>
       <span style="font-size: 11px; color:rgb(255, 255, 255);font-weight: normal;">Total Premium : {{item.sum ?  (item.sum |currency: 'INR':'symbol':'1.0-0'):0}}</span></ion-label><br>
-      <ion-badge color="warning" slot="end">Till Date Dsr Counts : {{item.Count}}</ion-badge>
+      <ion-badge color="warning" slot="end">Till Date DAR Counts : {{item.Count}}</ion-badge>
     </ion-item>
   </ion-card>
 </ion-grid>
@@ -75,7 +75,7 @@
   <div *ngIf="teamsData.length == 0">
     <img class="center empty-img" src="./assets/New/empty.svg">
     <h3 class="recordfound">No Record Found !</h3>
-    <!-- <ion-button class="empty-btn center" (click)="AddDsrActivity()" size="small">Add Dsr Activity</ion-button> -->
+    <!-- <ion-button class="empty-btn center" (click)="AddDsrActivity()" size="small">Add DAR Activity</ion-button> -->
   </div>
 </ng-container>
 

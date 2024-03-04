@@ -24,7 +24,7 @@ class BankBranchName {
   styleUrls: ['./dsrActivity.component.scss'],
 })
 export class DsrActivityComponent implements OnInit {
-  titleMsg = "DSR Activity";
+  titleMsg = "DAR Activity";
   userName: any;
   userEmpCode: any;
   drsFrom: FormGroup;
