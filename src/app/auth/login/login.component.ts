@@ -106,7 +106,7 @@ export class LoginComponent implements OnInit {
         this.loderService.loaderStatus.next(false);
         if (res.ResponseFlag == 1) {
           let data = JSON.parse(res.ResponseMessage).Table[0];
-          console.log("res",JSON.parse(res.ResponseMessage).Table);
+          // console.log("res",JSON.parse(res.ResponseMessage).Table);
           const stringifyObj = JSON.stringify(data)
           const b64Str = btoa(stringifyObj)
 
